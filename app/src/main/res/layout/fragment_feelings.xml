@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.FeelingsFragment"
+    android:background="@drawable/w2">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimary"
+        android:textSize="18sp"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="Reci svojim roditeljima kako se osjećaš.."
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/text">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/happy"
+            android:src="@drawable/happy"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/sad"
+            android:src="@drawable/sad"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="50dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/layout1">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/crying"
+            android:src="@drawable/crying"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/tired"
+            android:src="@drawable/tired"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="50dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/layout2">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/angry"
+            android:src="@drawable/angry"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:id="@+id/heart"
+            android:src="@drawable/heart"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="1dp"
+            android:layout_marginLeft="50dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".SignUpAsActivity"
+    android:orientation="vertical"
+    android:background="@drawable/w1"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registrujte se kao:"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="-50dp"/>
+
+    <Button
+        android:id="@+id/parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RODITELJ"
+        app:backgroundTint="#3285C3"
+        android:layout_marginTop="50dp"/>
+
+    <Button
+        android:id="@+id/child"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DIJETE"
+        app:backgroundTint="#3285C3"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/teacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VASPITAČ"
+        app:backgroundTint="#3285C3"
+        android:layout_marginTop="20dp" />
+
+
+</LinearLayout>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:id="@+id/profileImage"
+        android:layout_marginLeft="5dp"
+        android:padding="5dp"
+        android:src="@drawable/avatar"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1.5dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:civ_border_width="10dp"
+        app:civ_border_color="#00ff00"
+        android:id="@+id/online"
+        android:src="@mipmap/ic_launcher"
+        android:layout_below="@id/userNameList"
+        android:layout_marginTop="62dp"
+        android:layout_marginLeft="-25dp"
+        android:visibility="gone"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:civ_border_width="10dp"
+        app:civ_border_color="@color/red"
+        android:id="@+id/offline"
+        android:src="@mipmap/ic_launcher"
+        android:layout_below="@id/userNameList"
+        android:layout_marginTop="62dp"
+        android:layout_marginLeft="-25dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginLeft="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userNameList"
+            android:padding="5dp"
+            android:text="Korisničko ime"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lastMessage"
+            android:textSize="14sp"
+            android:paddingLeft="5dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

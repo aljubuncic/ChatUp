@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/settings"
+        android:title="Postavke"/>
+
+    <item android:id="@+id/editProfile"
+        android:title="Uredi profil"/>
+
+    <item android:id="@+id/groupChat"
+        android:title="Nova grupa"/>
+
+    <item android:id="@+id/logout"
+        android:title="Odjavi se"/>
+</menu>

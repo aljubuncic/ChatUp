@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.ChatsFragment"
+    android:background="@drawable/w2">
+
+    <LinearLayout
+        android:id="@+id/searchLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimary"
+        android:paddingTop="5dp"
+        android:elevation="12dp"
+        app:layout_constraintBottom_toTopOf="@id/chatRecyclerView">
+
+        <!--<ImageView
+            android:id="@+id/plus"
+            android:layout_width="35dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_plus" />-->
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Pretraži"
+            android:textColorHint="@color/lightGrey"
+            android:inputType="textPersonName"
+            android:padding="10dp"
+            android:textColor="@color/white"/>
+
+        <ImageView
+            android:id="@+id/search"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="4dp"
+            android:layout_weight="0"
+            android:src="@drawable/ic_search" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:paddingTop="45dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
