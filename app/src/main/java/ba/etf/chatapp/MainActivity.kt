@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import ba.etf.chatapp.adapters.FragmentsAdapter
 import ba.etf.chatapp.databinding.ActivityMainBinding
 import ba.etf.chatapp.fragments.ChatsFragment
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

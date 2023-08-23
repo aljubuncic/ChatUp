@@ -248,7 +248,6 @@ class ChatDetailsActivity : AppCompatActivity() {
                                 messages.add(0, message!!)
                             }
                             chatAdapter.notifyDataSetChanged()
-                            binding.chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
                             isLoadMore = false
                         }
                         override fun onCancelled(error: DatabaseError) {
