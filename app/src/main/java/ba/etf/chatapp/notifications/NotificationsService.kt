@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
@@ -26,22 +25,9 @@ class NotificationsService  : FirebaseMessagingService() {
         val sent = remoteMessage.data["sent"]
         val user = FirebaseAuth.getInstance().currentUser
 
-        Log.i("jupi", sent.toString())
         if(user != null && sent.toString() == user.uid) {
-            Log.i("jupi", "eeee")
             sendNotification(remoteMessage)
         }
-
-        /*if (remoteMessage.notification != null) {
-            remoteMessage.notification!!.title?.let {
-                remoteMessage.notification!!.body?.let { it1 ->
-                    showNotification(
-                        it,
-                        it1
-                    )
-                }
-            }
-        }*/
     }
 
     private fun sendNotification(remoteMessage: RemoteMessage) {
@@ -50,9 +36,7 @@ class NotificationsService  : FirebaseMessagingService() {
         val title = remoteMessage.data["title"]
         val body = remoteMessage.data["body"]
 
-        val notification = remoteMessage.notification
         val channelId = "notification_channel"
-        //val i = user!!.replace("[\\D", "").toInt()
         val intent = Intent(this, ChatDetailsActivity::class.java)
         intent.putExtra("userId", user)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -95,8 +79,6 @@ class NotificationsService  : FirebaseMessagingService() {
                 notificationChannel
             )
         }
-        //var j = 0
-        //if(i > 0) j = i
         notificationManager!!.notify(0, builder.build())
     }
 
@@ -153,7 +135,6 @@ class NotificationsService  : FirebaseMessagingService() {
         val notificationManager = getSystemService(
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager?
-        // Check if the Android Version is greater than Oreo
         if (Build.VERSION.SDK_INT
             >= Build.VERSION_CODES.O
         ) {

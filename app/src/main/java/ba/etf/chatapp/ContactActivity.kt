@@ -3,10 +3,8 @@ package ba.etf.chatapp
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ba.etf.chatapp.databinding.ActivityContactBinding
 import ba.etf.chatapp.models.User
@@ -23,16 +21,9 @@ class ContactActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
-    /*private lateinit var sinchClient: SinchClient
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var context: Context
-        var call: Call? = null
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //context = this
         binding = ActivityContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -46,7 +37,6 @@ class ContactActivity : AppCompatActivity() {
         val profileImage = intent.getStringExtra("profileImage")
 
         binding.userName.text = userName
-        //Picasso.get().load(profileImage).placeholder(R.drawable.avatar).into(binding.profileImage)
         storage = FirebaseStorage.getInstance()
         storage.reference.child("Profile Images").child(userId!!).downloadUrl.addOnSuccessListener {
             Picasso.get().load(it).placeholder(R.drawable.avatar).into(binding.profileImage)
@@ -109,76 +99,12 @@ class ContactActivity : AppCompatActivity() {
         }
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)*/
             finish()
         }
 
         binding.audioCallButton.setOnClickListener {
             MainActivity.callUser(userId)
         }
-
-        /*sinchClient = SinchClient.builder()
-            .context(this)
-            .applicationKey("cf94ea0b-1d8e-44cb-aee2-c1561f65a01f")
-            .environmentHost("clientapi.sinch.com")
-            .build()
-
-        //
-        //
-
-        sinchClient.callController.addCallControllerListener(SinchCallControllerListener())
-        sinchClient.start()*/
     }
-
-    /*private fun callUser(userId: String) {
-        if(call == null) {
-            call = sinchClient.callController.callUser(userId, MediaConstraints(false))
-            call?.addCallListener(SinchCallListener())
-            val dialog = AlertDialog.Builder(this).create()
-            dialog.setTitle("Calling")
-            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Hang up", DialogInterface.OnClickListener { dialogInterface, i ->
-                dialogInterface.dismiss()
-                call?.hangup()
-            })
-            dialog.show()
-        }
-    }
-
-    private class SinchCallControllerListener : CallControllerListener {
-
-        override fun onIncomingCall(callController: CallController, incomingCall: Call) {
-            val dialog = AlertDialog.Builder(context).create()
-            dialog.setTitle("Incoming Call")
-            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Reject", DialogInterface.OnClickListener { dialogInterface, i ->
-                dialogInterface.dismiss()
-                call?.hangup()
-            })
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Answer", DialogInterface.OnClickListener { dialogInterface, i ->
-                call = incomingCall
-                call?.answer()
-                call?.addCallListener(SinchCallListener())
-                Toast.makeText(context, "Call started", Toast.LENGTH_LONG).show()
-            })
-            dialog.show()
-        }
-    }
-
-    private class SinchCallListener : CallListener {
-
-        override fun onCallEnded(endedCall: Call) {
-            Toast.makeText(context, "Call ended", Toast.LENGTH_LONG).show()
-            call = null
-            endedCall.hangup()
-        }
-
-        override fun onCallEstablished(call: Call) {
-            Toast.makeText(context, "Call established", Toast.LENGTH_LONG).show()
-        }
-
-        override fun onCallProgressing(call: Call) {
-            Toast.makeText(context, "Ringing...", Toast.LENGTH_LONG).show()
-        }
-    }*/
 }
 

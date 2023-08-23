@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.widget.Toast
 import ba.etf.chatapp.databinding.ActivitySignInBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -63,6 +62,18 @@ class SignInActivity : AppCompatActivity() {
         binding.txtClickSignUp.setOnClickListener {
             val intent = Intent(this, SignUpAsActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.txtForgotPassword.setOnClickListener {
+            val email = binding.txtEmail.text.toString()
+            if(email.isEmpty()) {
+                Toast.makeText(this, "Unesite email", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                auth.sendPasswordResetEmail(email).addOnSuccessListener {
+                    Toast.makeText(this, "Link za resetovanje šifre je poslan na uneseni email", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

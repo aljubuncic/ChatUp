@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
@@ -65,13 +64,11 @@ class SettingsActivity : AppCompatActivity() {
         database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
-                //Picasso.get().load(user!!.profileImage).placeholder(R.drawable.avatar3).into(binding.profileImage)
                 storage = FirebaseStorage.getInstance()
                 storage.reference.child("Profile Images").child(FirebaseAuth.getInstance().uid!!).downloadUrl.addOnSuccessListener {
                     Picasso.get().load(it).placeholder(R.drawable.avatar).into(binding.profileImage)
                 }
                 binding.txtUsername.setText(user!!.userName, TextView.BufferType.EDITABLE)
-                //binding.txtUsername.hint = user!!.userName
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -79,8 +76,6 @@ class SettingsActivity : AppCompatActivity() {
         })
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)*/
             finish()
         }
 
@@ -97,13 +92,10 @@ class SettingsActivity : AppCompatActivity() {
 
         if(data != null && data.data != null) {
             val uri = data.data
-            Log.i("uri", uri.toString())
             binding.profileImage.setImageURI(uri)
 
             val storageReference = storage.reference.child("Profile Images").child(FirebaseAuth.getInstance().uid!!)
 
-
-            //msm da ne treba dok se ne pritisne save
             storageReference.putFile(uri!!).addOnSuccessListener {
                 storageReference.downloadUrl.addOnSuccessListener {
                     database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).child("profileImage").setValue(uri.toString())

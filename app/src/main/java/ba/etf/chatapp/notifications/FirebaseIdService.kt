@@ -21,7 +21,6 @@ class FirebaseIdService: FirebaseMessagingService() {
     private fun updateToken(newToken: String) {
         val user = FirebaseAuth.getInstance().currentUser
         val database = FirebaseDatabase.getInstance().getReference("Tokens")
-        //val database = FirebaseDatabase.getInstance().reference.child("Tokens")
         val token = Token(newToken)
         database.child(user!!.uid).setValue(token)
     }

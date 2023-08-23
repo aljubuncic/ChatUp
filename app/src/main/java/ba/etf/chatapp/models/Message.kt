@@ -6,6 +6,7 @@ class Message {
     var messageId: String? = null
     var timestamp: String? = null
     var image = false
+    var record = false
 
     constructor(uId: String?, message: String?) {
         this.uId = uId

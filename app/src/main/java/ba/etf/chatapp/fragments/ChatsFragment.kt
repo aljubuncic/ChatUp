@@ -3,7 +3,6 @@
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -30,9 +29,6 @@ class ChatsFragment : Fragment() {
     private lateinit var binding: FragmentChatsBinding
     private lateinit var users: ArrayList<User>
     private lateinit var database: FirebaseDatabase
-
-    //private lateinit var chats: ArrayList<String>
-    //private lateinit var mapForSorting: HashMap<User, Date>
     private lateinit var usersAdapter: UsersAdapter
 
     companion object {
@@ -56,23 +52,19 @@ class ChatsFragment : Fragment() {
 
         search = binding.searchLinearLayout
         binding.searchLinearLayout.setBackgroundColor(Color.parseColor(MainActivity.appTheme))
-        /*val window = this.window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.parseColor(MainActivity.theme)*/
 
         binding.search.setOnClickListener {
             val username = binding.searchText.text.toString()
             if(username == "") setUsers("")
             else {
                 database.reference.child("Users").orderByChild("userName").equalTo(username)
-                    .addValueEventListener(object : ValueEventListener {
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.children.toList().isEmpty()) {
                                 users.clear()
                                 usersAdapter.notifyDataSetChanged()
                             } else {
                                 for (snapshot in dataSnapshot.children) {
-                                    //val user = snapshot.getValue(User::class.java)
                                     setUsers(snapshot.key!!)
                                 }
                             }
@@ -83,14 +75,13 @@ class ChatsFragment : Fragment() {
                     })
 
                 database.reference.child("Groups").orderByChild("groupName").equalTo(username)
-                    .addValueEventListener(object : ValueEventListener {
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.children.toList().isEmpty()) {
                                 users.clear()
                                 usersAdapter.notifyDataSetChanged()
                             } else {
                                 for (snapshot in dataSnapshot.children) {
-                                    //val user = snapshot.getValue(User::class.java)
                                     setUsers(snapshot.key!!)
                                 }
                             }
@@ -102,101 +93,6 @@ class ChatsFragment : Fragment() {
             }
         }
 
-        /*database.reference.child("Chats").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                users.clear()
-                usersAdapter.notifyDataSetChanged()
-                for (snapshot in dataSnapshot.children) {
-                    //val chatId = (snapshot.getValue(Message::class.java) as Message).uId
-                    val chatId = snapshot.key
-                    if (chatId!!.contains(FirebaseAuth.getInstance().uid!!)) {
-                        chats.add(chatId)
-                    }
-                }
-                Log.i("chats", chats.toString())
-                //usersAdapter.notifyDataSetChanged()
-
-                database.reference.child("Users")
-                    .addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            setUsers(dataSnapshot)
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-                    })
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
-        /*val chats = ArrayList<String>()
-        var mapForSorting = HashMap<User, Date>()
-        database.reference.child("Chats").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                chats.clear()
-                for (snapshot in dataSnapshot.children) {
-                    //val chatId = (snapshot.getValue(Message::class.java) as Message).uId
-                    val chatId = snapshot.key
-                    if (chatId!!.contains(FirebaseAuth.getInstance().uid!!)) {
-                        chats.add(chatId)
-                    }
-                }
-                Log.i("chats", chats.toString())
-                //usersAdapter.notifyDataSetChanged()
-
-                database.reference.child("Users")
-                    .addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            users.clear()
-                            for (snapshot in dataSnapshot.children) {
-                                val user = snapshot.getValue(User::class.java)
-                                user!!.userId = snapshot.key!!
-
-                                //mozda prvi dio ne treba ako zelimo da se dopisujemo sami sa sobom
-                                if (user.userId != FirebaseAuth.getInstance().uid && chats.any {
-                                        it.contains(
-                                            user.userId.toString()
-                                        )
-                                    }) {
-                                    //users.add(user)
-                                    mapForSorting = HashMap()
-                                    FirebaseDatabase.getInstance().reference.child("Chats")
-                                        .child(FirebaseAuth.getInstance().uid + user.userId)
-                                        .orderByChild("timestamp").limitToLast(1)
-                                        .addListenerForSingleValueEvent(object :
-                                            ValueEventListener {
-                                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                for (snapshot in dataSnapshot.children) {
-                                                    ///mapForSorting[user] = Date(snapshot.child("timestamp").value as Long * 1000)
-                                                    mapForSorting[user] = Date(
-                                                        snapshot.child("timestamp").value.toString()
-                                                            .toLong() * 1000
-                                                    )
-                                                    val sortedMap = mapForSorting.toList()
-                                                        .sortedByDescending { (_, value) -> value }
-                                                        .toMap()
-                                                    users.clear()
-                                                    sortedMap.forEach { entry -> users.add(entry.key) }
-                                                    usersAdapter.notifyDataSetChanged()
-                                                }
-                                            }
-
-                                            override fun onCancelled(error: DatabaseError) {
-                                            }
-                                        })
-                                }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-                    })
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
         setUsers("")
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener { updateToken(it) }
@@ -206,9 +102,9 @@ class ChatsFragment : Fragment() {
 
     private fun setUsers(uid: String) {
         val chats = ArrayList<String>()
-        var mapForSorting = HashMap<User, Date>()
         database.reference.child("Chats").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var mapForSorting = HashMap<User, Date>()
                 chats.clear()
                 users.clear()
                 for (snapshot in dataSnapshot.children) {
@@ -219,7 +115,7 @@ class ChatsFragment : Fragment() {
                 }
 
                 database.reference.child("Users")
-                    .addValueEventListener(object : ValueEventListener {
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         @SuppressLint("NotifyDataSetChanged")
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             users.clear()
@@ -229,37 +125,33 @@ class ChatsFragment : Fragment() {
                                 val user = snapshot.getValue(User::class.java)
                                 user!!.userId = snapshot.key!!
 
-                                //mozda prvi dio ne treba ako zelimo da se dopisujemo sami sa sobom
                                 if (user.userId != FirebaseAuth.getInstance().uid && chats.any {
                                         it.contains(
                                             user.userId.toString()
                                         )
                                     }) {
-                                    //users.add(user)
-                                    ////mapForSorting = HashMap()
                                     FirebaseDatabase.getInstance().reference.child("Chats")
                                         .child(FirebaseAuth.getInstance().uid + user.userId)
                                         .orderByChild("timestamp").limitToLast(1)
-                                        .addValueEventListener(object :
+                                        .addListenerForSingleValueEvent(object :
                                             ValueEventListener {
                                             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                for (snapshot in dataSnapshot.children) {
-                                                    ///mapForSorting[user] = Date(snapshot.child("timestamp").value as Long * 1000)
+                                                for (snapshot1 in dataSnapshot.children) {
                                                     mapForSorting[user] = Date(
-                                                        snapshot.child("timestamp").value.toString()
+                                                        snapshot1.child("timestamp").value.toString()
                                                             .toLong() * 1000
                                                     )
-                                                    val sortedMap = mapForSorting.toList()
-                                                        .sortedByDescending { (_, value) -> value }
-                                                        .toMap()
-                                                    users.clear()
-                                                    sortedMap.forEach { entry ->
-                                                        if(entry.key.userName == "SVI") users.add(0, entry.key)
-                                                        else users.add(entry.key)
-                                                    }
-                                                    usersAdapter.notifyDataSetChanged()
+                                                }
+                                                val sortedMap = mapForSorting.toList()
+                                                    .sortedByDescending { (_, value) -> value }
+                                                    .toMap()
+                                                users.clear()
+                                                sortedMap.forEach { entry ->
+                                                    if(entry.key.userName == "SVI") users.add(0, entry.key)
+                                                    else users.add(entry.key)
                                                 }
                                                 if(uid != "") users.removeIf { u -> u.userId != uid }
+                                                usersAdapter.notifyDataSetChanged()
                                             }
 
                                             override fun onCancelled(error: DatabaseError) {
@@ -269,7 +161,7 @@ class ChatsFragment : Fragment() {
                             }
 
                             val groups = ArrayList<String>()
-                            database.reference.child("Group Participants").addValueEventListener(object : ValueEventListener {
+                            database.reference.child("Group Participants").addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     groups.clear()
                                     for (snapshot in dataSnapshot.children) {
@@ -282,9 +174,7 @@ class ChatsFragment : Fragment() {
                                             }
                                         }
                                     }
-                                        ////mapForSorting = HashMap()
                                     for(gr in groups) {
-                                        Log.i("grrr", gr)
                                         database.reference.child("Groups").child(gr).addListenerForSingleValueEvent(object : ValueEventListener {
                                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                                 val group = dataSnapshot.getValue(GroupChat::class.java)
@@ -295,26 +185,25 @@ class ChatsFragment : Fragment() {
                                                 FirebaseDatabase.getInstance().reference.child("Group Chats")
                                                     .child(gr)
                                                     .orderByChild("timestamp").limitToLast(1)
-                                                    .addValueEventListener(object :
+                                                    .addListenerForSingleValueEvent(object :
                                                         ValueEventListener {
                                                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                                                             for (snapshot in dataSnapshot.children) {
-                                                                ///mapForSorting[user] = Date(snapshot.child("timestamp").value as Long * 1000)
                                                                 mapForSorting[user] = Date(
                                                                     snapshot.child("timestamp").value.toString()
                                                                         .toLong() * 1000
                                                                 )
-                                                                val sortedMap = mapForSorting.toList()
-                                                                    .sortedByDescending { (_, value) -> value }
-                                                                    .toMap()
-                                                                users.clear()
-                                                                sortedMap.forEach { entry ->
-                                                                    if(entry.key.userName == "SVI") users.add(0, entry.key)
-                                                                    else users.add(entry.key)
-                                                                }
-                                                                usersAdapter.notifyDataSetChanged()
+                                                            }
+                                                            val sortedMap = mapForSorting.toList()
+                                                                .sortedByDescending { (_, value) -> value }
+                                                                .toMap()
+                                                            users.clear()
+                                                            sortedMap.forEach { entry ->
+                                                                if(entry.key.userName == "SVI") users.add(0, entry.key)
+                                                                else users.add(entry.key)
                                                             }
                                                             if(uid != "") users.removeIf { u -> u.userId != uid }
+                                                            usersAdapter.notifyDataSetChanged()
                                                         }
 
                                                         override fun onCancelled(error: DatabaseError) {
@@ -327,10 +216,6 @@ class ChatsFragment : Fragment() {
                                             }
                                         })
                                     }
-                                    /*for (gp in groups) {
-                                        if(users.filter { u -> u.userId == gp }.isEmpty())
-                                            users.add()
-                                    }*/
                                 }
 
                                 override fun onCancelled(error: DatabaseError) {
@@ -346,60 +231,6 @@ class ChatsFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
-
-        /*val groups = ArrayList<String>()
-        database.reference.child("Group Participants").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                groups.clear()
-                for (snapshot in dataSnapshot.children) {
-                    val groupId = snapshot.key
-                    for(user in snapshot.children) {
-                        if (FirebaseAuth.getInstance().uid == user.value.toString().substring(8).dropLast(1)) {
-                            groups.add(groupId!!)
-                        }
-                    }
-                    ////mapForSorting = HashMap()
-                    for(gr in groups) {
-                        database.reference.child("Groups").child(gr).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                val group = snapshot.getValue(GroupChat::class.java)
-                                val user = User(gr, group!!.groupName!!, "", "", group.image!!)
-                                FirebaseDatabase.getInstance().reference.child("Group Chats")
-                                    .child(gr)
-                                    .orderByChild("timestamp").limitToLast(1)
-                                    .addListenerForSingleValueEvent(object :
-                                        ValueEventListener {
-                                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                            for (snapshot in dataSnapshot.children) {
-                                                ///mapForSorting[user] = Date(snapshot.child("timestamp").value as Long * 1000)
-                                                mapForSorting[user] = Date(
-                                                    snapshot.child("timestamp").value.toString()
-                                                        .toLong() * 1000
-                                                )
-                                                val sortedMap = mapForSorting.toList()
-                                                    .sortedByDescending { (_, value) -> value }
-                                                    .toMap()
-                                                users.clear()
-                                                sortedMap.forEach { entry -> users.add(entry.key) }
-                                                usersAdapter.notifyDataSetChanged()
-                                            }
-                                        }
-
-                                        override fun onCancelled(error: DatabaseError) {
-                                        }
-                                    })
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                            }
-                        })
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
     }
 
     private fun updateToken(token: String) {

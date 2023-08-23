@@ -3,7 +3,6 @@ package ba.etf.chatapp.fragments
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,14 +47,11 @@ class ContactsFragment : Fragment() {
 
         search = binding.searchLinearLayout
         binding.searchLinearLayout.setBackgroundColor(Color.parseColor(MainActivity.appTheme))
-        /*val window = this.window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.parseColor(MainActivity.theme)*/
 
         binding.search.setOnClickListener {
             val username = binding.searchText.text.toString()
             if(username == "") {
-                database.reference.child("Users").addValueEventListener(object : ValueEventListener {
+                database.reference.child("Users").addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         setUsers(dataSnapshot)
                     }
@@ -66,7 +62,7 @@ class ContactsFragment : Fragment() {
             }
             else {
                 database.reference.child("Users").orderByChild("userName").equalTo(username)
-                    .addValueEventListener(object : ValueEventListener {
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             setUsers(dataSnapshot)
                         }
@@ -77,24 +73,6 @@ class ContactsFragment : Fragment() {
             }
         }
 
-        /*database.reference.child("Users").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                users.clear()
-                for(snapshot in dataSnapshot.children) {
-                    val user = snapshot.getValue(User::class.java)
-                    user!!.userId = snapshot.key!!
-
-                    if(user.userId != FirebaseAuth.getInstance().uid) {
-                        users.add(user)
-                    }
-                }
-                users.sortBy { it.userName }
-                usersAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
         database.reference.child("Users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 setUsers(dataSnapshot)
@@ -114,25 +92,27 @@ class ContactsFragment : Fragment() {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         val currentUser = dataSnapshot.getValue(User::class.java)
-                        Log.i("mailovi", currentUser!!.mail.toString())
                         if (data.children.toList().isNotEmpty()) {
                             for (snapshot in data.children) {
                                 val user = snapshot.getValue(User::class.java)
                                 user!!.userId = snapshot.key!!
 
                                 if (user.userId != FirebaseAuth.getInstance().uid) {
-                                    if (currentUser.parent) {
+                                    if (currentUser!!.parent) {
                                         database.reference.child("Users").orderByChild("parentMail")
-                                            .equalTo(currentUser!!.mail)
+                                            .equalTo(currentUser.mail)
                                             .addListenerForSingleValueEvent(object :
                                                 ValueEventListener {
                                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                    for (snapshot1 in dataSnapshot.children) {
-                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != snapshot1.getValue(
-                                                                User::class.java
-                                                            )!!.mail)
-                                                        ) {
-                                                            //|| !currentUser.parent && !currentUser.teacher && user.parent)) {
+                                                    val child = dataSnapshot.getValue(User::class.java)
+                                                    if (child != null) {
+                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != child.mail)) {
+                                                            users.add(user)
+                                                            users.sortBy { it.userName }
+                                                            usersAdapter.notifyDataSetChanged()
+                                                        }
+                                                    } else {
+                                                        if (!(user.parent || !user.parent && !user.teacher)) {
                                                             users.add(user)
                                                             users.sortBy { it.userName }
                                                             usersAdapter.notifyDataSetChanged()
@@ -156,9 +136,7 @@ class ContactsFragment : Fragment() {
                                     }
                                 }
                             }
-                            //users.sortBy { it.userName }
                         }
-                        //usersAdapter.notifyDataSetChanged()
                     }
 
                     override fun onCancelled(error: DatabaseError) {

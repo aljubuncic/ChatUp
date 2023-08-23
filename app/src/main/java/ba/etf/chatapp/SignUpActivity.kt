@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import ba.etf.chatapp.databinding.ActivitySignUpBinding
@@ -16,8 +15,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
@@ -39,7 +36,6 @@ class SignUpActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         val person = intent.getStringExtra("person").toString()
-        Log.i("person", person)
         if (person == "parent") parent = true
         if (person == "teacher") teacher = true
         if (!parent && !teacher) binding.parentEmail.visibility = View.VISIBLE

@@ -53,14 +53,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/txtClickSignUp"
+            android:id="@+id/txtForgotPassword"
             android:layout_gravity="right"
-            android:text="Nemate račun?"
+            android:text="Zaboravili ste šifru?"
             android:textColor="@color/white"
             android:gravity="right"
             android:padding="5dp"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textSize="14sp" />
 
         <Button
             android:layout_width="150dp"
@@ -70,10 +69,32 @@
             android:padding="15dp"
             android:text="Prijavi se"
             android:textStyle="bold"
-
             android:textAllCaps="false"
             app:backgroundTint="#3285C3"
             app:cornerRadius="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="________________   ________________"
+            android:textColor="@color/white"
+            android:gravity="right"
+            android:padding="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtClickSignUp"
+            android:layout_gravity="center"
+            android:text="Nemate račun?"
+            android:textColor="@color/white"
+            android:gravity="right"
+            android:padding="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 

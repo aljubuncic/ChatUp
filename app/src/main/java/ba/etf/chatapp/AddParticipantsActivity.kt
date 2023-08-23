@@ -42,8 +42,6 @@ class AddParticipantsActivity : AppCompatActivity() {
         }
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)*/
             finish()
         }
 
@@ -66,7 +64,7 @@ class AddParticipantsActivity : AppCompatActivity() {
         binding.search.setOnClickListener {
             val username = binding.searchText.text.toString()
             if(username == "") {
-                database.reference.child("Users").addValueEventListener(object :
+                database.reference.child("Users").addListenerForSingleValueEvent(object :
                     ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         setUsers(dataSnapshot)
@@ -78,7 +76,7 @@ class AddParticipantsActivity : AppCompatActivity() {
             }
             else {
                 database.reference.child("Users").orderByChild("userName").equalTo(username)
-                    .addValueEventListener(object : ValueEventListener {
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             setUsers(dataSnapshot)
                         }
@@ -99,19 +97,59 @@ class AddParticipantsActivity : AppCompatActivity() {
         })
     }
 
-    private fun setUsers(dataSnapshot: DataSnapshot) {
+    private fun setUsers(data: DataSnapshot) {
         users.clear()
-        if (dataSnapshot.children.toList().isNotEmpty()) {
-            for(snapshot in dataSnapshot.children) {
-                val user = snapshot.getValue(User::class.java)
-                user!!.userId = snapshot.key!!
+        if (FirebaseAuth.getInstance().uid != null) {
+            database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        val currentUser = dataSnapshot.getValue(User::class.java)
+                        if (data.children.toList().isNotEmpty()) {
+                            for (snapshot in data.children) {
+                                val user = snapshot.getValue(User::class.java)
+                                user!!.userId = snapshot.key!!
 
-                if(user.userId != FirebaseAuth.getInstance().uid) {
-                    users.add(user)
-                }
-            }
-            users.sortBy { it.userName }
+                                if (user.userId != FirebaseAuth.getInstance().uid) {
+                                    if (currentUser!!.parent) {
+                                        database.reference.child("Users").orderByChild("parentMail")
+                                            .equalTo(currentUser.mail)
+                                            .addListenerForSingleValueEvent(object :
+                                                ValueEventListener {
+                                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                                    for (snapshot1 in dataSnapshot.children) {
+                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != snapshot1.getValue(
+                                                                User::class.java
+                                                            )!!.mail)
+                                                        ) {
+                                                            users.add(user)
+                                                            users.sortBy { it.userName }
+                                                            usersAdapter.notifyDataSetChanged()
+                                                        }
+                                                    }
+                                                }
+
+                                                override fun onCancelled(error: DatabaseError) {
+                                                }
+                                            })
+                                    } else if (currentUser.teacher) {
+                                        users.add(user)
+                                        users.sortBy { it.userName }
+                                        usersAdapter.notifyDataSetChanged()
+                                    } else {
+                                        if (!user.parent) {
+                                            users.add(user)
+                                            users.sortBy { it.userName }
+                                            usersAdapter.notifyDataSetChanged()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
         }
-        usersAdapter.notifyDataSetChanged()
     }
 }

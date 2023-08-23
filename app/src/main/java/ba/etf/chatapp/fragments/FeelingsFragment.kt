@@ -2,17 +2,13 @@ package ba.etf.chatapp.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-import ba.etf.chatapp.ChatDetailsActivity
 import ba.etf.chatapp.MainActivity
 import ba.etf.chatapp.R
-import ba.etf.chatapp.databinding.FragmentChatsBinding
 import ba.etf.chatapp.databinding.FragmentFeelingsBinding
 import ba.etf.chatapp.models.Message
 import ba.etf.chatapp.models.User
@@ -29,8 +25,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import java.util.Date
@@ -166,7 +160,6 @@ class FeelingsFragment : Fragment() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             val user = dataSnapshot.getValue(User::class.java)
                             val username = user!!.userName.toString()
-                            //?
                             val data = NotificationData(senderId, R.drawable.logo, message, username, receiverId)
                             val sender = Sender(data, token!!.token)
 

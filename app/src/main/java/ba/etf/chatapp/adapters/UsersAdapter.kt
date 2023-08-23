@@ -1,14 +1,10 @@
 package ba.etf.chatapp.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -31,9 +27,8 @@ import kotlin.collections.ArrayList
 
 class UsersAdapter(
     private var users: ArrayList<User>,
-    private val context: Context,  //?
+    private val context: Context,
     var chats: Boolean,
-    //var groupChatDetails: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var storage: FirebaseStorage
 
@@ -78,7 +73,6 @@ class UsersAdapter(
         textSizeIncreased = ApplicationSettingsActivity.textSizeIncrease
 
         if(holder.javaClass == SingleChatViewHolder::class.java) {
-            //Picasso.get().load(user.profileImage).placeholder(R.drawable.avatar1).into(holder.image)
             storage.reference.child("Profile Images").child(user.userId!!).downloadUrl.addOnSuccessListener {
                 Picasso.get().load(it).placeholder(R.drawable.avatar).into((holder as SingleChatViewHolder).image)
             }
@@ -98,10 +92,10 @@ class UsersAdapter(
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for(snapshot in dataSnapshot.children) {
                                 val image = snapshot.child("image").value
-                                if (image == null || image == false)
-                                    holder.lastMessage.text =
-                                        snapshot.child("message").value.toString()
-                                else holder.lastMessage.text = "Image"
+                                val record = snapshot.child("record").value
+                                if (image == true) holder.lastMessage.text = "Slika"
+                                else if (record == true) holder.lastMessage.text = "Glasovna poruka"
+                                else holder.lastMessage.text = snapshot.child("message").value.toString()
                             }
                         }
 
@@ -156,7 +150,6 @@ class UsersAdapter(
             holder.lastMessage.textSize = 14F + textSizeIncreased * 5
         }
         else {
-            //Picasso.get().load(user.profileImage).placeholder(R.drawable.avatar1).into(holder.image)
             storage.reference.child("Profile Images").child(user.userId!!).downloadUrl.addOnSuccessListener {
                 Picasso.get().load(it).placeholder(R.drawable.avatar).into((holder as GroupChatViewHolder).image)
             }
@@ -168,10 +161,10 @@ class UsersAdapter(
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for(snapshot in dataSnapshot.children) {
                             val image = snapshot.child("image").value
-                            if (image == null || image == false)
-                                holder.lastMessage.text =
-                                    snapshot.child("message").value.toString()
-                            else holder.lastMessage.text = "Image"
+                            val record = snapshot.child("record").value
+                            if (image == true) holder.lastMessage.text = "Slika"
+                            else if (record == true) holder.lastMessage.text = "Glasovna poruka"
+                            else holder.lastMessage.text = snapshot.child("message").value.toString()
                         }
                     }
 
@@ -202,72 +195,7 @@ class UsersAdapter(
                 }
             }
 
-            //holder.userName.textSize = factor * (holder.userName.textSize + textSizeIncreased * 10)
         }
-
-        /*if(groupChatDetails) {
-            holder.imageOnline.visibility = View.GONE
-            holder.imageOffline.visibility = View.GONE
-        }
-        else {
-            if (user.status.equals("online")) {
-                holder.imageOnline.visibility = View.VISIBLE
-                holder.imageOffline.visibility = View.GONE
-            } else {
-                holder.imageOnline.visibility = View.GONE
-                holder.imageOffline.visibility = View.VISIBLE
-            }
-        }*/
-
-        /*if(chats) {
-            FirebaseDatabase.getInstance().reference.child("Chats").child(FirebaseAuth.getInstance().uid + user.userId)
-                .orderByChild("timestamp").limitToLast(1).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(snapshot in dataSnapshot.children)
-                            (holder as SingleChatViewHolder).lastMessage.text = snapshot.child("message").value.toString()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-        }
-
-        if(groupChatDetails) {
-            FirebaseDatabase.getInstance().reference.child("Group Chats").child(user.userId!!)
-                .orderByChild("timestamp").limitToLast(1)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        for(snapshot in dataSnapshot.children)
-                            holder.lastMessage.text = snapshot.child("message").value.toString()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-        }*/
-
-        /*holder.itemView.setOnClickListener {
-            if(chats) {
-                val intent = Intent(context, ChatDetailsActivity::class.java)
-                intent.putExtra("userId", user.userId)
-                intent.putExtra("profileImage", user.profileImage)
-                intent.putExtra("userName", user.userName)
-                context.startActivity(intent)
-            }
-            else if(groupChatDetails) {
-                val intent = Intent(context, GroupChatDetailsActivity::class.java)
-                intent.putExtra("groupId", user.userId)
-                intent.putExtra("groupName", user.userName)
-                context.startActivity(intent)
-            }
-            else {
-                val intent = Intent(context, ContactActivity::class.java)
-                intent.putExtra("userId", user.userId)
-                intent.putExtra("profileImage", user.profileImage)
-                intent.putExtra("userName", user.userName)
-                context.startActivity(intent)
-            }
-        }*/
     }
 
     override fun getItemCount(): Int {

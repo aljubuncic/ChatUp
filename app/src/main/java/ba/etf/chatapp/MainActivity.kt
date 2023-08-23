@@ -7,10 +7,8 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.PopupMenu
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import ba.etf.chatapp.adapters.FragmentsAdapter
@@ -34,7 +32,6 @@ import com.sinch.android.rtc.calling.CallController
 import com.sinch.android.rtc.calling.CallControllerListener
 import com.sinch.android.rtc.calling.CallListener
 import com.sinch.android.rtc.calling.MediaConstraints
-import com.squareup.picasso.Picasso
 import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
@@ -69,6 +66,8 @@ class MainActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
+
+        appTheme = "#7bc1fa"
 
         binding.layout.setBackgroundColor(Color.parseColor(appTheme))
         val window = this.window
@@ -123,64 +122,19 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        /*database.reference.child("Users").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for(snapshot in dataSnapshot.children) {
-                    val user = snapshot.getValue(User::class.java)
-                    storage.reference.child("Profile Images").child(snapshot.key!!).putFile(Uri.parse(user!!.profileImage))
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
-
-        sinchClient = SinchClient.builder() //m.M0VHYl2tHncUZC2KipfBzi8P
+        sinchClient = SinchClient.builder()
             .context(this)
             .applicationKey("5719a36c-c690-4065-b7f3-8b4bf78eb159")
             .environmentHost("ocra.api.sinch.com")
             .userId(FirebaseAuth.getInstance().uid!!)
             .build()
 
-        //
-        //
         sinchClient.addSinchClientListener(SinchClientListener())
 
 
         sinchClient.callController.addCallControllerListener(SinchCallControllerListener())
         sinchClient.start()
-        Log.i("main", sinchClient.isStarted.toString())
     }
-
-    /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.editProfile -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.settings -> {
-                val intent = Intent(this, ApplicationSettingsActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.groupChat -> {
-                val intent = Intent(this, AddParticipantsActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.logout -> {
-                status("offline")
-                auth.signOut()
-                val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
 
     private fun status(status: String) {
         if(FirebaseAuth.getInstance().uid != null) {
@@ -282,7 +236,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onCredentialsRequired(clientRegistration: ClientRegistration) {
-            //clientRegistration.register(create("5719a36c-c690-4065-b7f3-8b4bf78eb159", "m.M0VHYl2tHncUZC2KipfBzi8P", "userId"))
         }
 
         override fun onLogMessage(level: Int, area: String, message: String) {

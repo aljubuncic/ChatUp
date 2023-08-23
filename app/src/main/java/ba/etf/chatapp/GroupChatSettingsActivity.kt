@@ -54,7 +54,6 @@ class GroupChatSettingsActivity : AppCompatActivity() {
                         dataSnapshot.children.toList().forEach { c ->
                             if(c.key!!.toInt() > max) max = c.key!!.toInt()
                         }
-                        //val  groupId = (dataSnapshot.children.toList().stream(). + 1).toString()
                         val groupId = (max + 1).toString()
                         if(imageUri != null) {
                             groupChat.image = imageUri.toString()
@@ -76,7 +75,6 @@ class GroupChatSettingsActivity : AppCompatActivity() {
                                 val intent = Intent(applicationContext, GroupChatActivity::class.java)
                                 intent.putExtra("groupId", groupId)
                                 intent.putExtra("groupName", groupName)
-                                //intent.putExtra("image", imageUri.toString())
                                 startActivity(intent)
                             }
                         }
@@ -93,8 +91,6 @@ class GroupChatSettingsActivity : AppCompatActivity() {
         }
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)*/
             finish()
         }
 

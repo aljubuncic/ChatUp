@@ -141,11 +141,6 @@ class ApplicationSettingsActivity : AppCompatActivity() {
                 binding.text1.textSize = 20F + progress * 5
                 binding.text2.textSize = 20F + progress * 5
                 binding.text3.textSize = 20F + progress * 5
-                /*val factor = applicationContext.resources.displayMetrics.density
-                val params = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                params.setMargins((factor * 25).toInt(), (factor * (20 + progress * 5)).toInt(), (factor * 25).toInt(), 0)
-                binding.increasePhotos.layoutParams = params*/
-                //bice jos
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {

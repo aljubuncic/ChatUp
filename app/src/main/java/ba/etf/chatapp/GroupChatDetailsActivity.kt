@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
@@ -48,9 +47,7 @@ class GroupChatDetailsActivity : AppCompatActivity() {
         binding.participants.adapter = usersAdapter
         database.reference.child("Group Participants").child(intent.getStringExtra("groupId")!!).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.i("parrr", dataSnapshot.children.toList().size.toString())
                 for (snapshot in dataSnapshot.children) {
-                    //users.add(snapshot.getValue(User::class.java)!!)
                     val uid = snapshot.value.toString().substring(8).dropLast(1)
                     database.reference.child("Users").child(uid).addListenerForSingleValueEvent(object: ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -58,8 +55,6 @@ class GroupChatDetailsActivity : AppCompatActivity() {
                             user.userId = dataSnapshot.key
                             users.add(user)
                             usersAdapter.notifyDataSetChanged()
-                            //usersAdapter = UsersAdapter(users, applicationContext, false)
-                            //binding.participants.adapter = usersAdapter
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -76,17 +71,12 @@ class GroupChatDetailsActivity : AppCompatActivity() {
         var groupName = intent.getStringExtra("groupName")
 
         binding.groupName.setText(intent.getStringExtra("groupName"), TextView.BufferType.EDITABLE)
-        //binding.groupName.hint = intent.getStringExtra("groupName") //xxx
 
         storage.reference.child("Profile Images").child(intent.getStringExtra("groupId")!!).downloadUrl.addOnSuccessListener {
             Picasso.get().load(it).placeholder(R.drawable.avatar).into(binding.groupImage)
         }
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, GroupChatActivity::class.java)
-            intent.putExtra("groupId", groupId)
-            intent.putExtra("groupName", groupName)
-            startActivity(intent)*/
             finish()
         }
 
@@ -145,17 +135,6 @@ class GroupChatDetailsActivity : AppCompatActivity() {
                 val obj = HashMap<String, Any>()
                 obj["groupName"] = groupName!!
                 database.reference.child("Groups").child(groupId!!).updateChildren(obj).addOnSuccessListener {
-                    /*val users = UsersSelectionAdapter.selectedUsers
-                    for(user in users) {
-                        database.reference.child("Group Participants").child(groupId!!).push().setValue(object { val userId = user.userId!! })
-                    }
-                    database.reference.child("Group Participants").child(groupId!!).push().setValue(object { val userId = FirebaseAuth.getInstance().uid!! }).addOnSuccessListener {
-                        val intent = Intent(applicationContext, GroupChatActivity::class.java)
-                        intent.putExtra("groupId", groupId)
-                        intent.putExtra("groupName", groupName)
-                        //intent.putExtra("image", imageUri.toString())
-                        startActivity(intent)
-                    }*/
                 }
                 Toast.makeText(this, "Group updated", Toast.LENGTH_SHORT).show()
             }

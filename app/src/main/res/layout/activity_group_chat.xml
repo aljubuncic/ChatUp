@@ -32,9 +32,9 @@
             android:src="@drawable/ic_plus" />
 
         <EditText
+            android:id="@+id/enterMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/enterMessage"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_weight="1"
@@ -44,17 +44,40 @@
             android:inputType="textPersonName"
             android:padding="10dp" />
 
+        <com.devlomi.record_view.RecordView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.8"
+            android:visibility="gone"
+            app:slide_to_cancel_text="Povuci da odustaneš"
+            app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+            app:slide_to_cancel_arrow_color="@color/black"
+            android:id="@+id/recordView" />
+
         <ImageView
             android:id="@+id/sendMessage"
             android:layout_width="30dp"
             android:layout_height="50dp"
+            android:layout_marginTop="-3dp"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="0"
-            android:layout_marginTop="-3dp"
-            android:src="@drawable/ic_send" />
+            android:src="@drawable/ic_send"
+            android:visibility="gone"/>
+
+        <com.devlomi.record_view.RecordButton
+            android:id="@+id/sendVoice"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_weight="0"
+            android:background="@drawable/ic_mic"/>
 
     </LinearLayout>
 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="7dp"
+    android:maxWidth="310dp"
+    android:maxHeight="400dp"
+    android:minHeight="30dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/receiverImage"
+        android:layout_marginStart="-5dp"
+        android:layout_marginTop="-1dp"
+        android:padding="5dp"
+        android:src="@drawable/avatar"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="-7dp"
+        android:layout_marginRight="7dp"
+        android:maxWidth="310dp"
+        android:maxHeight="400dp"
+        android:minHeight="30dp"
+        android:id="@+id/layout"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/receiverName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="15dp"
+            android:inputType="textLongMessage|textMultiLine"
+            android:maxWidth="270dp"
+            android:minWidth="50dp"
+            android:text="Korisničko ime"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@id/receiverText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
+            android:id="@+id/voicePlayerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:enableVisualizer="false"
+            app:visualizationPlayedColor="@color/lightpink"
+            app:visualizationNotPlayedColor="@color/lightGrey"
+            app:seekBarProgressColor="#000"
+            app:showShareButton="false"
+            app:shareCornerRadius="100"
+            app:playPauseCornerRadius="100"
+            app:showTiming="true"
+            app:viewCornerRadius="100"
+            app:viewBackground="#F6F6F6"
+            app:progressTimeColor="#000"
+            app:seekBarThumbColor="@color/lightred"
+            app:playProgressbarColor="#ff7700"
+            app:layout_constraintTop_toTopOf="@+id/layout"
+            app:layout_constraintEnd_toEndOf="@+id/layout"
+            app:layout_constraintStart_toStartOf="@+id/layout"/>
+
+    </LinearLayout>
+
+</LinearLayout>

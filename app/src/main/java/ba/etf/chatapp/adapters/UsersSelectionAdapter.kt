@@ -1,14 +1,11 @@
 package ba.etf.chatapp.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RadioButton
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
@@ -46,13 +43,11 @@ class UsersSelectionAdapter(
         holder.userName.text = user.userName
 
         holder.radio.setOnClickListener {
-            Log.i("clikc", holder.radio.isChecked.toString())
-            //holder.radio.isChecked = !holder.radio.isChecked
             if(holder.radio.isChecked) {
                 selectedUsers.add(user)
             }
             else {
-                selectedUsers.removeIf { u -> u.mail.equals(user.mail) } //radi li? //equals
+                selectedUsers.removeIf { u -> u.mail.equals(user.mail) }
             }
             if(selectedUsers.isNotEmpty()) {
                 AddParticipantsActivity.binding.next.setTextColor(Color.WHITE)

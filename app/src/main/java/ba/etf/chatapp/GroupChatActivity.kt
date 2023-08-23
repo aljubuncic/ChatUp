@@ -1,12 +1,19 @@
 package ba.etf.chatapp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.media.MediaRecorder
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ba.etf.chatapp.adapters.GroupChatAdapter
@@ -19,6 +26,7 @@ import ba.etf.chatapp.notifications.NotificationData
 import ba.etf.chatapp.notifications.Response
 import ba.etf.chatapp.notifications.Sender
 import ba.etf.chatapp.notifications.Token
+import com.devlomi.record_view.OnRecordListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -30,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
+import java.io.File
 import java.util.Date
 
 class GroupChatActivity : AppCompatActivity() {
@@ -41,9 +50,7 @@ class GroupChatActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private var isLoadMore = false
     private var firstMessage = false
-    //private var currentPage = 1
     private val recordPerPage = 20
-    //private var loadedMessages = ArrayList<Message>()
     private lateinit var storage: FirebaseStorage
     private var notify = false
     private lateinit var apiService: APIService
@@ -51,9 +58,11 @@ class GroupChatActivity : AppCompatActivity() {
     private lateinit var senderId: String
     private lateinit var groupId: String
     private lateinit var groupName: String
-    private lateinit var receiverRoom: String
 
     private lateinit var messages: ArrayList<Message>
+
+    private lateinit var mediaRecorder: MediaRecorder
+    private lateinit var audioPath: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,16 +81,34 @@ class GroupChatActivity : AppCompatActivity() {
         groupName = intent.getStringExtra("groupName")!!
 
         binding.groupName.text = intent.getStringExtra("groupName")
-        //Picasso.get().load(profileImage).placeholder(R.drawable.avatar).into(binding.profileImage)
         storage = FirebaseStorage.getInstance()
         storage.reference.child("Profile Images").child(intent.getStringExtra("groupId")!!).downloadUrl.addOnSuccessListener {
             Picasso.get().load(it).placeholder(R.drawable.avatar).into(binding.image)
         }
 
         binding.backArrow.setOnClickListener {
-            /*val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)*/
             finish()
+        }
+
+        binding.enterMessage.addTextChangedListener {
+            if(binding.enterMessage.text.toString().isNotEmpty() && binding.enterMessage.text.toString() != "") {
+                binding.sendVoice.visibility = View.GONE
+                binding.sendMessage.visibility = View.VISIBLE
+            } else {
+                binding.sendVoice.visibility = View.VISIBLE
+                binding.sendMessage.visibility = View.GONE
+            }
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 0);
+        } else {
+            binding.sendVoice.isListenForRecord = false
+        }
+        binding.sendVoice.setRecordView(binding.recordView)
+        binding.sendVoice.isListenForRecord = false
+        binding.sendVoice.setOnClickListener {
+            binding.sendVoice.isListenForRecord = true
         }
 
         binding.details.setOnClickListener {
@@ -90,6 +117,71 @@ class GroupChatActivity : AppCompatActivity() {
             intent.putExtra("groupName", groupName)
             startActivity(intent)
         }
+
+        binding.recordView.setOnRecordListener(object : OnRecordListener {
+            override fun onStart() {
+                //Start Recording..
+                Log.d("RecordView", "onStart")
+                setupRecording()
+
+                mediaRecorder.prepare()
+                mediaRecorder.start()
+
+                binding.recordView.visibility = View.VISIBLE
+                binding.enterMessage.visibility = View.GONE
+                binding.plus.visibility = View.GONE
+            }
+
+            override fun onCancel() {
+                //On Swipe To Cancel
+                Log.d("RecordView", "onCancel")
+
+                mediaRecorder.reset()
+                mediaRecorder.release()
+
+                val file = File(audioPath)
+                if(file.exists()) file.delete()
+
+                binding.recordView.visibility = View.GONE
+                binding.enterMessage.visibility = View.VISIBLE
+                binding.plus.visibility = View.VISIBLE
+            }
+
+            override fun onFinish(recordTime: Long, limitReached: Boolean) {
+                //Stop Recording..
+                //limitReached to determine if the Record was finished when time limit reached.
+                Log.d("RecordView", "onFinish")
+
+                mediaRecorder.stop()
+                mediaRecorder.release()
+
+                binding.recordView.visibility = View.GONE
+                binding.enterMessage.visibility = View.VISIBLE
+                binding.plus.visibility = View.VISIBLE
+
+                sendRecordingMessage(audioPath)
+            }
+
+            override fun onLessThanSecond() {
+                //When the record time is less than One Second
+                Log.d("RecordView", "onLessThanSecond")
+
+                mediaRecorder.reset()
+                mediaRecorder.release()
+
+                val file = File(audioPath)
+                if(file.exists()) file.delete()
+
+                binding.recordView.visibility = View.GONE
+                binding.enterMessage.visibility = View.VISIBLE
+                binding.plus.visibility = View.VISIBLE
+            }
+
+            override fun onLock() {
+                //When Lock gets activated
+                Log.d("RecordView", "onLock")
+            }
+        })
 
         messages = ArrayList<Message>()
         chatAdapter = GroupChatAdapter(messages, this)
@@ -106,18 +198,21 @@ class GroupChatActivity : AppCompatActivity() {
             message.timestamp = Date().time.toString()
             binding.enterMessage.setText("")
 
-            database.reference.child("Group Chats").child(groupId!!).push().setValue(message).addOnSuccessListener {
+            database.reference.child("Group Chats").child(groupId).push().setValue(message).addOnSuccessListener {
                 if(notify) {
-                    sendNotification(groupId, groupName!!, senderId!!, msg)
+                    sendNotification(groupId, groupName, senderId, msg)
                 }
                 notify = false
             }
+
+            binding.sendVoice.visibility = View.VISIBLE
+            binding.sendMessage.visibility = View.GONE
         }
 
         binding.plus.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_GET_CONTENT
-            intent.type = "image/* video/*" //radi li video?
+            intent.type = "image/* video/*"
             startActivityForResult(intent, 25)
         }
 
@@ -130,23 +225,6 @@ class GroupChatActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.parseColor(MainActivity.appTheme)
 
-        /*database.reference.child("Group Chats").child(groupId!!).orderByChild("timestamp").limitToLast(recordPerPage).addValueEventListener(object:
-            ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                messages.clear()
-                for(snapshot in dataSnapshot.children) {
-                    val message = snapshot.getValue(Message::class.java)
-                    message?.messageId = snapshot.key
-                    messages.add(message!!)
-                }
-                chatAdapter.notifyDataSetChanged()
-                if(chatAdapter.itemCount != 0) {
-                    binding.chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })*/
         loadData()
 
         binding.chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -162,7 +240,7 @@ class GroupChatActivity : AppCompatActivity() {
                     isLoadMore = true
 
                     database.reference.child("Group Chats").child(groupId).orderByChild("timestamp").endBefore(timestamp).limitToLast(recordPerPage)
-                        .addValueEventListener(object: ValueEventListener {
+                        .addListenerForSingleValueEvent(object: ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 for(snapshot in dataSnapshot.children.reversed()) {
                                     val message = snapshot.getValue(Message::class.java)
@@ -182,11 +260,9 @@ class GroupChatActivity : AppCompatActivity() {
 
     private fun sendNotification(groupId: String, groupName: String, senderId: String, message: String) {
         val tokens = database.getReference("Tokens")
-        //val users = ArrayList<User>()
         database.reference.child("Group Participants").child(groupId).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (snapshot in dataSnapshot.children) {
-                    //users.add(snapshot.getValue(User::class.java)!!)
                     val receiverId = snapshot.value.toString().substring(8).dropLast(1)
                     if (receiverId != FirebaseAuth.getInstance().uid) {
                         val query = tokens.orderByKey().equalTo(receiverId)
@@ -256,41 +332,21 @@ class GroupChatActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data != null && data.data != null) {
-            Log.i("glupost", data.data.toString())
             val message = Message(senderId, data.data.toString())
             message.image = true
             message.timestamp = Date().time.toString()
             val snapshot = database.reference.child("Group Chats").child(groupId).push()
             snapshot.setValue(message).addOnSuccessListener {
-                var storageReference = storage.reference.child("Chat Images").child(snapshot.key!!)
+                val storageReference = storage.reference.child("Chat Images").child(snapshot.key!!)
                 storageReference.putFile(data.data!!).addOnSuccessListener {
                     storageReference.downloadUrl.addOnSuccessListener {
-                        //database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).child("profileImage").setValue(uri.toString())
-                        //ponovo ucitat poruke
                         loadData()
                         if (notify) {
-                            sendNotification(groupId, groupName, senderId!!, "Image")
+                            sendNotification(groupId, groupName, senderId, "Slika")
                         }
                         notify = false
                     }
                 }
-                /*val snapshot1 = database.reference.child("Group Chats").child(receiverRoom).push()
-                snapshot1.setValue(message).addOnSuccessListener {
-                    storageReference = storage.reference.child("Chat Images").child(snapshot1.key!!)
-                    storageReference.putFile(data.data!!).addOnSuccessListener {
-                        storageReference.downloadUrl.addOnSuccessListener {
-                            //database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).child("profileImage").setValue(uri.toString())
-                            //ponovo ucitat poruke
-                            loadData()
-                        }
-                    }
-
-                    if(notify) {
-                        sendNotification(receiverId, senderId!!, "Image")
-                    }
-                    notify = false
-                }
-            }*/
             }
         }
     }
@@ -313,5 +369,36 @@ class GroupChatActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
+
+    private fun setupRecording() {
+        mediaRecorder = MediaRecorder()
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+        val file = File(filesDir, "Records")
+        if(!file.exists()) file.mkdirs()
+        audioPath = file.absolutePath + File.separator + System.currentTimeMillis() + ".3gp"
+
+        mediaRecorder.setOutputFile(audioPath)
+    }
+
+    private fun sendRecordingMessage(audioPath: String) {
+        val snapshot = database.reference.child("Group Chats").child(groupId).push()
+        val storageReference = storage.reference.child("Records").child(snapshot.key!!)
+        val audioFile = Uri.fromFile(File(audioPath))
+        storageReference.putFile(audioFile).addOnSuccessListener { success ->
+            success.storage.downloadUrl.addOnCompleteListener { path ->
+                if(path.isSuccessful) {
+                    val url = path.result.toString()
+                    val message = Message(senderId, url)
+                    message.record = true
+                    message.timestamp = Date().time.toString()
+                    snapshot.setValue(message)
+                }
+            }
+        }
+        sendNotification(groupId, groupName, senderId, "Glasovna poruka")
     }
 }
