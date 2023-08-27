@@ -118,6 +118,7 @@ class GroupChatAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = messages[position]
         storage = FirebaseStorage.getInstance()
+        database = FirebaseDatabase.getInstance()
 
         when (holder.javaClass) {
             SenderTextViewHolder::class.java -> {
@@ -130,7 +131,6 @@ class GroupChatAdapter(
             }
             ReceiverTextViewHolder::class.java -> {
                 (holder as ReceiverTextViewHolder).receiverMsg.text = message.message
-                database = FirebaseDatabase.getInstance()
                 database.reference.child("Users").child(message.uId!!).addListenerForSingleValueEvent(object :
                     ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -155,12 +155,11 @@ class GroupChatAdapter(
             SenderPhotoViewHolder::class.java -> {
                 storage.reference.child("Chat Images").child(message.messageId!!).downloadUrl.addOnSuccessListener {
                     Picasso.get().load(it).placeholder(R.drawable.image_icon).into((holder as SenderPhotoViewHolder).senderMsg)
-                    GroupChatActivity.binding.chatRecyclerView.smoothScrollToPosition(
-                        GroupChatActivity.chatAdapter.itemCount - 1)
+                    //GroupChatActivity.binding.chatRecyclerView.smoothScrollToPosition(GroupChatActivity.chatAdapter.itemCount - 1)
                     holder.senderMsg.setOnClickListener {
                         val intent = Intent(context, ImageShowActivity::class.java)
                         intent.putExtra("image", message.messageId)
-                        intent.putExtra("userName", "You")
+                        intent.putExtra("userName", "Ti")
                         context.startActivity(intent)
                     }
                 }
@@ -172,8 +171,7 @@ class GroupChatAdapter(
             ReceiverPhotoViewHolder::class.java -> {
                 storage.reference.child("Chat Images").child(message.messageId!!).downloadUrl.addOnSuccessListener {
                     Picasso.get().load(it).placeholder(R.drawable.image_icon).into((holder as ReceiverPhotoViewHolder).receiverMsg)
-                    GroupChatActivity.binding.chatRecyclerView.smoothScrollToPosition(
-                        GroupChatActivity.chatAdapter.itemCount - 1)
+                    //GroupChatActivity.binding.chatRecyclerView.smoothScrollToPosition(GroupChatActivity.chatAdapter.itemCount - 1)
                     holder.receiverMsg.setOnClickListener {
                         val intent = Intent(context, ImageShowActivity::class.java)
                         intent.putExtra("image", message.messageId)
@@ -181,7 +179,6 @@ class GroupChatAdapter(
                         context.startActivity(intent)
                     }
                 }
-                database = FirebaseDatabase.getInstance()
                 database.reference.child("Users").child(message.uId!!).addListenerForSingleValueEvent(object :
                     ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {

@@ -123,7 +123,7 @@ class ChatAdapter(
             SenderPhotoViewHolder::class.java -> {
                 storage.reference.child("Chat Images").child(message.messageId!!).downloadUrl.addOnSuccessListener {
                     Picasso.get().load(it).placeholder(R.drawable.image_icon).into((holder as SenderPhotoViewHolder).senderMsg)
-                    ChatDetailsActivity.binding.chatRecyclerView.smoothScrollToPosition(ChatDetailsActivity.chatAdapter.itemCount - 1)
+                    //ChatDetailsActivity.binding.chatRecyclerView.smoothScrollToPosition(ChatDetailsActivity.chatAdapter.itemCount - 1)
                     holder.senderMsg.setOnClickListener {
                         val intent = Intent(context, ImageShowActivity::class.java)
                         intent.putExtra("image", message.messageId)
@@ -139,7 +139,7 @@ class ChatAdapter(
             ReceiverPhotoViewHolder::class.java -> {
                 storage.reference.child("Chat Images").child(message.messageId!!).downloadUrl.addOnSuccessListener {
                     Picasso.get().load(it).placeholder(R.drawable.image_icon).into((holder as ReceiverPhotoViewHolder).receiverMsg)
-                    ChatDetailsActivity.binding.chatRecyclerView.smoothScrollToPosition(ChatDetailsActivity.chatAdapter.itemCount - 1)
+                    //ChatDetailsActivity.binding.chatRecyclerView.smoothScrollToPosition(ChatDetailsActivity.chatAdapter.itemCount - 1)
                     holder.receiverMsg.setOnClickListener {
                         val intent = Intent(context, ImageShowActivity::class.java)
                         intent.putExtra("image", message.messageId)

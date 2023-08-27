@@ -116,11 +116,15 @@ class AddParticipantsActivity : AppCompatActivity() {
                                             .addListenerForSingleValueEvent(object :
                                                 ValueEventListener {
                                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                    for (snapshot1 in dataSnapshot.children) {
-                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != snapshot1.getValue(
-                                                                User::class.java
-                                                            )!!.mail)
-                                                        ) {
+                                                    val child = dataSnapshot.children.toList()[0].getValue(User::class.java)
+                                                    if (child != null) {
+                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != child.mail)) {
+                                                            users.add(user)
+                                                            users.sortBy { it.userName }
+                                                            usersAdapter.notifyDataSetChanged()
+                                                        }
+                                                    } else {
+                                                        if (!(user.parent || !user.parent && !user.teacher)) {
                                                             users.add(user)
                                                             users.sortBy { it.userName }
                                                             usersAdapter.notifyDataSetChanged()
@@ -136,7 +140,7 @@ class AddParticipantsActivity : AppCompatActivity() {
                                         users.sortBy { it.userName }
                                         usersAdapter.notifyDataSetChanged()
                                     } else {
-                                        if (!user.parent) {
+                                        if (!user.parent || user.mail == currentUser.parentMail) {
                                             users.add(user)
                                             users.sortBy { it.userName }
                                             usersAdapter.notifyDataSetChanged()

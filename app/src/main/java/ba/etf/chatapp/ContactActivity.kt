@@ -44,12 +44,8 @@ class ContactActivity : AppCompatActivity() {
 
         binding.userName.textSize = 18F + ApplicationSettingsActivity.textSizeIncrease * 5
         binding.messageButton.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
-        binding.audioCallButton.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
-        binding.videoCallButton.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
 
         binding.messageButton.setBackgroundColor(Color.parseColor(MainActivity.appTheme))
-        binding.audioCallButton.setBackgroundColor(Color.parseColor(MainActivity.appTheme))
-        binding.videoCallButton.setBackgroundColor(Color.parseColor(MainActivity.appTheme))
         val window = this.window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.parseColor(MainActivity.appTheme)
@@ -100,10 +96,6 @@ class ContactActivity : AppCompatActivity() {
 
         binding.backArrow.setOnClickListener {
             finish()
-        }
-
-        binding.audioCallButton.setOnClickListener {
-            MainActivity.callUser(userId)
         }
     }
 }

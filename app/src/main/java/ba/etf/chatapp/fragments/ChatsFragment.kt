@@ -115,7 +115,7 @@ class ChatsFragment : Fragment() {
                 }
 
                 database.reference.child("Users")
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                    .addValueEventListener(object : ValueEventListener {
                         @SuppressLint("NotifyDataSetChanged")
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             users.clear()
