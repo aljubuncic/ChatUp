@@ -35,6 +35,7 @@ class SignInActivity : AppCompatActivity() {
         binding.txtPassword.textSize = 18F + ApplicationSettingsActivity.textSizeIncrease * 4
         binding.txtClickSignUp.textSize = 16F + ApplicationSettingsActivity.textSizeIncrease * 4
         binding.btnSignIn.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
+        binding.txtForgotPassword.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
 
         binding.btnSignIn.setOnClickListener {
             if(binding.txtEmail.text.toString().isNotEmpty() && binding.txtPassword.text.toString().isNotEmpty()) {

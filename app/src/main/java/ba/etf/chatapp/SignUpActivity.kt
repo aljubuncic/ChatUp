@@ -49,6 +49,7 @@ class SignUpActivity : AppCompatActivity() {
         binding.txtPassword.textSize = 18F + ApplicationSettingsActivity.textSizeIncrease * 4
         binding.txtAlreadyHaveAccount.textSize = 16F + ApplicationSettingsActivity.textSizeIncrease * 4
         binding.btnSignUp.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 4
+        binding.parentEmail.textSize = 18F + ApplicationSettingsActivity.textSizeIncrease * 4
 
         binding.btnSignUp.setOnClickListener {
             if(binding.txtUsername.text.toString().isNotEmpty() && binding.txtEmail.text.toString().isNotEmpty() && binding.txtPassword.text.toString().isNotEmpty()) {
