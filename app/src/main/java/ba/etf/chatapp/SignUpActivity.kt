@@ -2,8 +2,11 @@ package ba.etf.chatapp
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ba.etf.chatapp.databinding.ActivitySignUpBinding
@@ -96,6 +99,7 @@ class SignUpActivity : AppCompatActivity() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     var exist = false
                                     for(snapshot in dataSnapshot.children) {
+                                        Log.i("xxx", "xxx")
                                         exist = true
                                         if (!snapshot.getValue(User::class.java)!!.parent) {
                                             progressDialog.dismiss()
@@ -112,18 +116,18 @@ class SignUpActivity : AppCompatActivity() {
                                                         database.reference.child("Users").child(id).setValue(user)
                                                         database.reference.child("Groups").orderByChild("groupName").equalTo("SVI").addListenerForSingleValueEvent(object :
                                                             ValueEventListener {
-                                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                for(snapshot1 in dataSnapshot.children) {
-                                                    database.reference.child("Group Participants").child(snapshot1.key!!).push().setValue(object { val userId = id })
-                                                }
-                                                Toast.makeText(applicationContext, "Uspješno ste registrovani!", Toast.LENGTH_SHORT).show()
-                                                val intent = Intent(applicationContext, MainActivity::class.java)
-                                                startActivity(intent)
-                                            }
+                                                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                                                    for(snapshot1 in dataSnapshot.children) {
+                                                                        database.reference.child("Group Participants").child(snapshot1.key!!).push().setValue(object { val userId = id })
+                                                                    }
+                                                                    Toast.makeText(applicationContext, "Uspješno ste registrovani!", Toast.LENGTH_SHORT).show()
+                                                                    val intent = Intent(applicationContext, MainActivity::class.java)
+                                                                    startActivity(intent)
+                                                                }
 
-                                            override fun onCancelled(error: DatabaseError) {
-                                            }
-                                        })
+                                                                override fun onCancelled(error: DatabaseError) {
+                                                                }
+                                                            })
                                                     }
                                                     else {
                                                         Toast.makeText(applicationContext, "Korisnik sa unesenim emailom već postoji!", Toast.LENGTH_SHORT).show()
@@ -155,5 +159,13 @@ class SignUpActivity : AppCompatActivity() {
             val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.appTheme = "#7bc1fa"
+        val window = this.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor(MainActivity.appTheme)
     }
 }

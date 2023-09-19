@@ -1,7 +1,9 @@
 package ba.etf.chatapp
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import ba.etf.chatapp.databinding.ActivitySignUpAsBinding
 
@@ -33,5 +35,13 @@ class SignUpAsActivity : AppCompatActivity() {
             intent.putExtra("person", "teacher")
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.appTheme = "#7bc1fa"
+        val window = this.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor(MainActivity.appTheme)
     }
 }
