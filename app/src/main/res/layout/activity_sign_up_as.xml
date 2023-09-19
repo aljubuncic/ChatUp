@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="RODITELJ"
+        android:textColor="@color/white"
         app:backgroundTint="#3285C3"
         android:layout_marginTop="50dp"/>
 
@@ -33,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DIJETE"
+        android:textColor="@color/white"
         app:backgroundTint="#3285C3"
         android:layout_marginTop="20dp" />
 
@@ -41,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="VASPITAČ"
+        android:textColor="@color/white"
         app:backgroundTint="#3285C3"
         android:layout_marginTop="20dp" />
 

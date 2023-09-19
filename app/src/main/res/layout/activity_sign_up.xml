@@ -98,6 +98,7 @@
             android:textStyle="bold"
             android:textAllCaps="false"
             app:backgroundTint="#3285C3"
+            android:textColor="@color/white"
             app:cornerRadius="8dp"/>
 
     </LinearLayout>

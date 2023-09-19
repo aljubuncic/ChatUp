@@ -2,8 +2,10 @@ package ba.etf.chatapp
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import ba.etf.chatapp.databinding.ActivitySignInBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -76,5 +78,13 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity.appTheme = "#7bc1fa"
+        val window = this.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor(MainActivity.appTheme)
     }
 }

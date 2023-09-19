@@ -104,18 +104,23 @@ class ContactsFragment : Fragment() {
                                             .addListenerForSingleValueEvent(object :
                                                 ValueEventListener {
                                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                    val child = dataSnapshot.children.toList()[0].getValue(User::class.java)
-                                                    if (child != null) {
-                                                        if (!(user.parent || !user.parent && !user.teacher && user.mail != child.mail)) {
-                                                            users.add(user)
-                                                            users.sortBy { it.userName }
-                                                            usersAdapter.notifyDataSetChanged()
-                                                        }
-                                                    } else {
-                                                        if (!(user.parent || !user.parent && !user.teacher)) {
-                                                            users.add(user)
-                                                            users.sortBy { it.userName }
-                                                            usersAdapter.notifyDataSetChanged()
+                                                    if(dataSnapshot.children.toList().isNotEmpty()) {
+                                                        val child =
+                                                            dataSnapshot.children.toList()[0].getValue(
+                                                                User::class.java
+                                                            )
+                                                        if (child != null) {
+                                                            if (!(user.parent || !user.parent && !user.teacher && user.mail != child.mail)) {
+                                                                users.add(user)
+                                                                users.sortBy { it.userName }
+                                                                usersAdapter.notifyDataSetChanged()
+                                                            }
+                                                        } else {
+                                                            if (!(user.parent || !user.parent && !user.teacher)) {
+                                                                users.add(user)
+                                                                users.sortBy { it.userName }
+                                                                usersAdapter.notifyDataSetChanged()
+                                                            }
                                                         }
                                                     }
                                                 }

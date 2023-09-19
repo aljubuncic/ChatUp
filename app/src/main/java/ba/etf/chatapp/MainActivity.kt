@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
 
+        appTheme = "#7bc1fa"
+
         binding.viewPager.adapter = FragmentsAdapter(supportFragmentManager)
         binding.tabLayout.setupWithViewPager(binding.viewPager)
         binding.tabLayout.setBackgroundColor(Color.parseColor(appTheme))
@@ -69,8 +71,6 @@ class MainActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
-
-        appTheme = "#7bc1fa"
 
         binding.layout.setBackgroundColor(Color.parseColor(appTheme))
         val window = this.window
