@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -99,7 +98,6 @@ class SignUpActivity : AppCompatActivity() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     var exist = false
                                     for(snapshot in dataSnapshot.children) {
-                                        Log.i("xxx", "xxx")
                                         exist = true
                                         if (!snapshot.getValue(User::class.java)!!.parent) {
                                             progressDialog.dismiss()
