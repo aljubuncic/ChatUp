@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "ba.etf.chatapp"
         minSdk 28
-        targetSdk 32
+        targetSdk 33
         versionCode 2
         versionName "2.0"
 
@@ -35,6 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'ba.etf.chatapp'
 }
 
 dependencies {
@@ -55,7 +56,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:20.0.0'
     implementation 'com.android.car.ui:car-ui-lib:2.0.0'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.0'
-    implementation files("C:\\Users\\ZIRA\\Downloads\\sinch-android-rtc-6.2.8+ee41053e\\libs\\sinch-android-rtc-6.2.8+ee41053e.aar")
+    implementation files("C:\\faks\\6.semestar\\Diplomski\\sinch-android-rtc-6.7.11+86ca6620\\sinch-android-rtc-6.7.11+86ca6620\\libs\\sinch-android-rtc-6.7.11+86ca6620.aar")
     implementation 'androidx.test:core-ktx:1.5.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
