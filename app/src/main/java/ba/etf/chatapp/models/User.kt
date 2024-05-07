@@ -10,6 +10,7 @@ class User {
     var parent = false
     var teacher = false
     var parentMail: String? = null
+    var emergencyContactMail: String? = null
 
     constructor(userName: String, mail: String, password: String) {
         this.userName = userName
