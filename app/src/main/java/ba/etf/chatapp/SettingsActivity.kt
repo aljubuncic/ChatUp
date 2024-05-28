@@ -11,8 +11,10 @@ import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import ba.etf.chatapp.MainActivity.Companion.context
+import ba.etf.chatapp.adapters.EmergencyContactSelectionAdapter
 import ba.etf.chatapp.adapters.UsersAdapter
 import ba.etf.chatapp.adapters.UsersSelectionAdapter
+import ba.etf.chatapp.databinding.ActivityAddParticipantsBinding
 import ba.etf.chatapp.databinding.ActivitySettingsBinding
 import ba.etf.chatapp.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -27,13 +29,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySettingsBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
     private lateinit var users: ArrayList<User>
-    private lateinit var usersAdapter: UsersAdapter
+    private lateinit var usersAdapter: EmergencyContactSelectionAdapter
     private lateinit var currentUser: User
+    companion object {
+        lateinit var binding: ActivitySettingsBinding
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,7 @@ class SettingsActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     currentUser = dataSnapshot.getValue(User::class.java)!!
+                    currentUser.userId = dataSnapshot.key!!
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -115,8 +120,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         users = ArrayList()
-        usersAdapter = UsersAdapter(users, this, false)
+        usersAdapter = EmergencyContactSelectionAdapter(users,null)
         binding.emergencyRecyclerView.adapter = usersAdapter
+        binding.saveEmergencyContactButton.isEnabled = false
 
         val layoutManager = LinearLayoutManager(this)
         binding.emergencyRecyclerView.layoutManager = layoutManager
@@ -134,9 +140,14 @@ class SettingsActivity : AppCompatActivity() {
                         users.add(parent)
                     }
                 }
-                Log.d("Users:", users[0].mail.toString())
+                //Log.d("Users:", users[0].mail.toString())
                 // Notify adapter after both teacher and parent users are added
                 usersAdapter.notifyDataSetChanged()
+
+                displayAssignedEmergencyContact()
+                usersAdapter.notifyDataSetChanged()
+
+                addListenerToSaveEmergencyContactButton()
             }
         }
     }
@@ -162,6 +173,31 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun addListenerToSaveEmergencyContactButton() {
+        binding.saveEmergencyContactButton.setOnClickListener {
+            if(binding.saveEmergencyContactButton.isEnabled){
+                assignEmergencyContactMailToCurrentUser(EmergencyContactSelectionAdapter.selectedUser!!)
+            }
+        }
+    }
+
+    private fun assignEmergencyContactMailToCurrentUser(emergencyContact: User) {
+        val obj = HashMap<String, Any>()
+        obj["emergencyContactMail"] = emergencyContact.mail!!
+        Log.d("emergencyMail", emergencyContact.mail!!)
+        database.reference.child("Users").child(currentUser.userId!!)
+            .updateChildren(obj).addOnSuccessListener {
+                Toast.makeText(this, "Emergency contact successfully added", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun displayAssignedEmergencyContact() {
+        val emergencyContact = users.find {
+            it.mail.equals(currentUser.emergencyContactMail)
+        }
+        usersAdapter = EmergencyContactSelectionAdapter(users,emergencyContact)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

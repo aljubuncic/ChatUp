@@ -65,4 +65,16 @@
 
     </androidx.viewpager.widget.ViewPager>
 
+    <ImageButton
+        android:id="@+id/sendEmergencyMessageButton"
+        android:layout_width="80dp"
+        android:layout_height="83dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.902"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+        app:layout_constraintVertical_bias="0.86"
+        app:srcCompat="@android:drawable/stat_sys_warning" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

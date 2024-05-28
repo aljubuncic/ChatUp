@@ -29,15 +29,15 @@
         android:layout_marginLeft="5dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/userName"
-            android:paddingLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="-20dp"
+            android:paddingLeft="5dp"
             android:text="Korisničko ime"
+            android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 

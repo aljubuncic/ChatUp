@@ -24,4 +24,11 @@ class User {
     }
 
     constructor()
+
+    override fun equals(other: Any?): Boolean {
+        if(other !is User)
+            return false
+        return  userId.equals(other.userId)
+
+    }
 }

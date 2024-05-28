@@ -7,6 +7,8 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -16,7 +18,15 @@ import ba.etf.chatapp.adapters.FragmentsAdapter
 import ba.etf.chatapp.databinding.ActivityMainBinding
 import ba.etf.chatapp.fragments.ChatsFragment
 import ba.etf.chatapp.fragments.ContactsFragment
+import ba.etf.chatapp.fragments.FeelingsFragment
+import ba.etf.chatapp.models.Message
 import ba.etf.chatapp.models.User
+import ba.etf.chatapp.notifications.APIService
+import ba.etf.chatapp.notifications.Client
+import ba.etf.chatapp.notifications.NotificationData
+import ba.etf.chatapp.notifications.Response
+import ba.etf.chatapp.notifications.Sender
+import ba.etf.chatapp.notifications.Token
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -33,6 +43,8 @@ import com.sinch.android.rtc.calling.CallController
 import com.sinch.android.rtc.calling.CallControllerListener
 import com.sinch.android.rtc.calling.CallListener
 import com.sinch.android.rtc.calling.MediaConstraints
+import retrofit2.Callback
+import java.util.Date
 import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
+    private lateinit var apiService: APIService
+    private lateinit var currentUser: User
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
+        apiService = Client.getClient("https://fcm.googleapis.com/")!!.create(APIService::class.java)
 
         appTheme = "#7bc1fa"
 
@@ -62,9 +77,16 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.setBackgroundColor(Color.parseColor(appTheme))
         database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val user = dataSnapshot.getValue(User::class.java)
-                if(user != null && (user.parent || user.teacher)) {
+                currentUser = dataSnapshot.getValue(User::class.java)!!
+                currentUser.userId = dataSnapshot.key!!
+
+                if(currentUser != null && (currentUser.parent || currentUser.teacher)) {
                     binding.tabLayout.removeTabAt(2)
+                    binding.sendEmergencyMessageButton.visibility = View.GONE
+                }
+
+                binding.sendEmergencyMessageButton.setOnClickListener {
+                    sendMessageToEmergencyContact()
                 }
             }
 
@@ -137,6 +159,84 @@ class MainActivity : AppCompatActivity() {
 
         sinchClient.callController.addCallControllerListener(SinchCallControllerListener())
         sinchClient.start()
+    }
+
+    private fun sendMessageToEmergencyContact() {
+        val message = Message(currentUser.userId, "UPOZORENJE")
+        message.timestamp = Date().time.toString()
+        message.isEmergency = true
+
+        getEmergencyContact(currentUser.emergencyContactMail!!) {
+            val senderId = currentUser.userId
+            val receiverId = it.userId
+            val senderRoom = senderId + receiverId
+            val receiverRoom = receiverId + senderId
+            database.reference.child("Chats").child(senderRoom).push().setValue(message).addOnSuccessListener {
+                database.reference.child("Chats").child(receiverRoom).push().setValue(message).addOnSuccessListener {
+                    Log.d("recieverId", "$receiverId")
+                    Log.d("senderId", "$senderId")
+                    Log.d("message", "${message.message}")
+                    sendNotification(receiverId!!, senderId!!, message.message!!)
+                }
+            }
+        }
+
+    }
+
+    private fun getEmergencyContact(emergencyContactMail: String, callback: (User) -> Unit) {
+        database.reference.child("Users").orderByChild("mail").equalTo(emergencyContactMail)
+            .addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.children.first().getValue(User::class.java)!!
+                Log.d("user", user.mail.toString())
+                user.userId = dataSnapshot.children.first().key!!
+                callback(user)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
+    private fun sendNotification(receiverId: String, senderId: String, message: String) {
+        val tokens = database.getReference("Tokens")
+        val query = tokens.orderByKey().equalTo(receiverId)
+        query.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for(snapshot in dataSnapshot.children) {
+                    val token = snapshot.getValue(Token::class.java)
+                    database.reference.child("Users").child(senderId).addListenerForSingleValueEvent(object :
+                        ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val user = dataSnapshot.getValue(User::class.java)
+                            val username = user!!.userName.toString()
+                            val data = NotificationData(senderId, R.drawable.logo, message, username, receiverId)
+                            val sender = Sender(data, token!!.token)
+
+                            apiService.sendNotification(sender).enqueue(object :
+                                Callback<Response> {
+                                override fun onFailure(call: retrofit2.Call<Response>?, t: Throwable?) {
+                                }
+
+                                override fun onResponse(call: retrofit2.Call<Response>?, response: retrofit2.Response<Response>?) {
+                                    if(response!!.code() == 200) {
+                                        if(response.body()!!.success != 1) {
+                                            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+
+                            })
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     private fun status(status: String) {
