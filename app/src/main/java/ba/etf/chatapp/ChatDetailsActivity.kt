@@ -36,6 +36,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import com.vanniktech.emoji.EmojiPopup
 import retrofit2.Call
 import retrofit2.Callback
 import java.io.File
@@ -64,6 +65,8 @@ class ChatDetailsActivity : AppCompatActivity() {
 
     private lateinit var mediaRecorder: MediaRecorder
     private lateinit var audioPath: String
+
+    private lateinit var emojiPopup: EmojiPopup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +109,12 @@ class ChatDetailsActivity : AppCompatActivity() {
                 binding.sendVoice.visibility = View.VISIBLE
                 binding.sendMessage.visibility = View.GONE
             }
+        }
+
+        emojiPopup = EmojiPopup(binding.root, binding.enterMessage)
+
+        binding.emojiViewTab.setOnClickListener {
+            emojiPopup.toggle()
         }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -316,6 +325,7 @@ class ChatDetailsActivity : AppCompatActivity() {
                                     if(response!!.code() == 200) {
                                         if(response.body()!!.success != 1) {
                                             Toast.makeText(applicationContext, "Failed!", Toast.LENGTH_SHORT).show()
+                                            Log.d("Response", "${response.body()!!.success}")
                                         }
                                     }
                                 }

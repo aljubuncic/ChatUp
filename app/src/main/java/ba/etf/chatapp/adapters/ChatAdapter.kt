@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -113,6 +114,11 @@ class ChatAdapter(
                 holder.senderTime.text = simpleDateFormat.format(date)
                 holder.senderMsg.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 5
                 holder.senderTime.textSize = 9F + ApplicationSettingsActivity.textSizeIncrease * 2
+                holder.itemView.findViewById<ConstraintLayout>(R.id.layout)
+                    .setBackgroundResource(R.drawable.bg_sender)
+                holder.senderMsg.setTextColor(Color.BLACK)
+                holder.senderTime.setTextColor(Color.BLACK)
+                Log.d("isEmergency","${message.isEmergency}")
                 if(message.isEmergency) {
                     holder.itemView.findViewById<ConstraintLayout>(R.id.layout)
                         .setBackgroundResource(R.drawable.bg_sender_emergency)
@@ -127,6 +133,10 @@ class ChatAdapter(
                 holder.receiverTime.text = simpleDateFormat.format(date)
                 holder.receiverMsg.textSize = 14F + ApplicationSettingsActivity.textSizeIncrease * 5
                 holder.receiverTime.textSize = 9F + ApplicationSettingsActivity.textSizeIncrease * 2
+                holder.itemView.findViewById<ConstraintLayout>(R.id.layout)
+                    .setBackgroundResource(R.drawable.bg_receiver)
+                holder.receiverMsg.setTextColor(Color.BLACK)
+                holder.receiverTime.setTextColor(Color.BLACK)
                 if(message.isEmergency) {
                     holder.itemView.findViewById<ConstraintLayout>(R.id.layout)
                         .setBackgroundResource(R.drawable.bg_receiver_emergency)

@@ -31,7 +31,7 @@
             android:layout_marginTop="-3dp"
             android:src="@drawable/ic_plus" />
 
-        <EditText
+        <com.vanniktech.emoji.EmojiEditText
             android:id="@+id/enterMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,17 +55,24 @@
             android:id="@+id/recordView" />
 
         <ImageView
+            android:id="@+id/emojiViewTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_emoji" />
+
+        <ImageView
             android:id="@+id/sendMessage"
             android:layout_width="30dp"
             android:layout_height="50dp"
-            android:layout_marginTop="-3dp"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
+            android:layout_marginTop="-3dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="0"
             android:src="@drawable/ic_send"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <com.devlomi.record_view.RecordButton
             android:id="@+id/sendVoice"
@@ -77,7 +84,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="0"
-            android:background="@drawable/ic_mic"/>
+            android:background="@drawable/ic_mic" />
 
     </LinearLayout>
 

@@ -46,6 +46,8 @@ import com.sinch.android.rtc.calling.MediaConstraints
 import retrofit2.Callback
 import java.util.Date
 import kotlin.collections.HashMap
+import com.vanniktech.emoji.EmojiManager
+import com.vanniktech.emoji.facebook.FacebookEmojiProvider
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -57,11 +59,15 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
+        EmojiManager.install(FacebookEmojiProvider())
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        context = this
 
         supportActionBar?.hide()
 
@@ -86,7 +92,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 binding.sendEmergencyMessageButton.setOnClickListener {
-                    sendMessageToEmergencyContact()
+                    if(currentUser.emergencyContactMail != null)
+                        sendMessageToEmergencyContact()
+                    else
+                        Toast.makeText(context, "Kontakt za hitne slučajeve nije postavljen u postavkama profila", Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -267,7 +276,6 @@ class MainActivity : AppCompatActivity() {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
         var call: Call? = null
-
         fun callUser(userId: String) {
             if (call == null) {
                 sinchClient.start()
@@ -329,44 +337,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private class SinchClientListener : com.sinch.android.rtc.SinchClientListener {
-
         override fun onClientFailed(client: SinchClient, error: SinchError) {
-            TODO("Not yet implemented")
+
         }
 
         override fun onClientStarted(client: SinchClient) {
-            TODO("Not yet implemented")
         }
 
         override fun onCredentialsRequired(clientRegistration: ClientRegistration) {
         }
 
-        override fun onLogMessage(level: Int, area: String, message: String) {
-            TODO("Not yet implemented")
-        }
-
         override fun onPushTokenRegistered() {
-            TODO("Not yet implemented")
         }
 
         override fun onPushTokenRegistrationFailed(error: SinchError) {
-            TODO("Not yet implemented")
         }
 
         override fun onPushTokenUnregistered() {
-            TODO("Not yet implemented")
         }
 
         override fun onPushTokenUnregistrationFailed(error: SinchError) {
-            TODO("Not yet implemented")
         }
 
         override fun onUserRegistered() {
-            TODO("Not yet implemented")
         }
 
         override fun onUserRegistrationFailed(error: SinchError) {
-            TODO("Not yet implemented")
         }
     }
 }
