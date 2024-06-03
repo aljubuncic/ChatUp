@@ -73,9 +73,13 @@ class UsersAdapter(
         textSizeIncreased = ApplicationSettingsActivity.textSizeIncrease
 
         if(holder.javaClass == SingleChatViewHolder::class.java) {
+            (holder as SingleChatViewHolder).image.setImageResource(R.drawable.avatar)
             storage.reference.child("Profile Images").child(user.userId!!).downloadUrl.addOnSuccessListener {
                 Picasso.get().load(it).placeholder(R.drawable.avatar).into((holder as SingleChatViewHolder).image)
+            }.addOnFailureListener {
+                (holder as SingleChatViewHolder).image.setImageResource(R.drawable.avatar)
             }
+
             (holder as SingleChatViewHolder).userName.text = user.userName
 
             if (user.status.equals("online")) {
@@ -150,8 +154,11 @@ class UsersAdapter(
             holder.lastMessage.textSize = 14F + textSizeIncreased * 5
         }
         else {
+            (holder as GroupChatViewHolder).image.setImageResource(R.drawable.avatar)
             storage.reference.child("Profile Images").child(user.userId!!).downloadUrl.addOnSuccessListener {
                 Picasso.get().load(it).placeholder(R.drawable.avatar).into((holder as GroupChatViewHolder).image)
+            }.addOnFailureListener {
+                (holder as GroupChatViewHolder).image.setImageResource(R.drawable.avatar)
             }
             (holder as GroupChatViewHolder).userName.text = user.userName
 

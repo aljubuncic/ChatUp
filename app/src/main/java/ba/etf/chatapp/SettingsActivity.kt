@@ -53,18 +53,7 @@ class SettingsActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        database.reference.child("Users").child(auth.uid!!)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    currentUser = dataSnapshot.getValue(User::class.java)!!
-                    currentUser.userId = dataSnapshot.key!!
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            }
-            )
-
+        updateCurrentUserVariable()
 
         binding.saveButton.setOnClickListener {
             if(binding.txtUsername.text.toString() != "") {
@@ -103,6 +92,7 @@ class SettingsActivity : AppCompatActivity() {
                 binding.txtUsername.setText(user!!.userName, TextView.BufferType.EDITABLE)
                 if(user != null && (user.parent || user.teacher)) {
                     binding.emergencyContactSelect.removeAllViews()
+                    binding.selectedEmergencyContactLayout.removeAllViews()
                 }
             }
 
@@ -189,7 +179,7 @@ class SettingsActivity : AppCompatActivity() {
         val obj = HashMap<String, Any>()
         obj["emergencyContactMail"] = emergencyContact.mail!!
         Log.d("emergencyMail", emergencyContact.mail!!)
-        database.reference.child("Users").child(currentUser.userId!!)
+        database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!)
             .updateChildren(obj).addOnSuccessListener {
                 Toast.makeText(this, "Emergency contact successfully added", Toast.LENGTH_SHORT).show()
             }
@@ -227,5 +217,21 @@ class SettingsActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateCurrentUserVariable()
+    }
+
+    private fun updateCurrentUserVariable() {
+        database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                currentUser = dataSnapshot.getValue(User::class.java)!!
+                currentUser.userId = dataSnapshot.key!!
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 }

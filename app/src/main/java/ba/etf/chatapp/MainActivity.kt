@@ -260,8 +260,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateCurrentUserVariable() {
+        database.reference.child("Users").child(FirebaseAuth.getInstance().uid!!).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                currentUser = dataSnapshot.getValue(User::class.java)!!
+                currentUser.userId = dataSnapshot.key!!
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
     override fun onResume() {
         super.onResume()
+        updateCurrentUserVariable()
         status("online")
     }
 
