@@ -11,6 +11,6 @@ interface APIService {
         "Authorization:key=AAAALhoTykg:APA91bE3E8jTTJSb8zokBsNg-9mHP9qCnWr3rkeHFO5D1PVrHa64CK3wEElAADwZZymzdhwz8OAQa5lIVmxunZ9kFkYWO8fQwme0rAac9IwkvortZXToahq6heqvIc7kBwl0IEJNEYB5"
     )
 
-    @POST("fcm/send")
+    @POST("/v1/projects/chatup-87a2e/messages:send")
     fun sendNotification(@Body body: Sender): Call<Response>
 }

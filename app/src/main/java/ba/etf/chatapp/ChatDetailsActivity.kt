@@ -111,9 +111,10 @@ class ChatDetailsActivity : AppCompatActivity() {
             }
         }
 
-        emojiPopup = EmojiPopup(binding.root, binding.enterMessage)
+        emojiPopup = EmojiPopup(binding.root,
+            binding.enterMessage)
 
-        binding.emojiViewTab.setOnClickListener {
+        binding.openEmojiPopup.setOnClickListener {
             emojiPopup.toggle()
         }
 
@@ -139,6 +140,7 @@ class ChatDetailsActivity : AppCompatActivity() {
 
                 binding.recordView.visibility = View.VISIBLE
                 binding.enterMessage.visibility = View.GONE
+                binding.openEmojiPopup.visibility = View.GONE
                 binding.plus.visibility = View.GONE
             }
 
@@ -154,6 +156,7 @@ class ChatDetailsActivity : AppCompatActivity() {
 
                 binding.recordView.visibility = View.GONE
                 binding.enterMessage.visibility = View.VISIBLE
+                binding.openEmojiPopup.visibility = View.VISIBLE
                 binding.plus.visibility = View.VISIBLE
             }
 
@@ -167,6 +170,7 @@ class ChatDetailsActivity : AppCompatActivity() {
 
                 binding.recordView.visibility = View.GONE
                 binding.enterMessage.visibility = View.VISIBLE
+                binding.openEmojiPopup.visibility = View.VISIBLE
                 binding.plus.visibility = View.VISIBLE
 
                 sendRecordingMessage(audioPath)
@@ -184,6 +188,7 @@ class ChatDetailsActivity : AppCompatActivity() {
 
                 binding.recordView.visibility = View.GONE
                 binding.enterMessage.visibility = View.VISIBLE
+                binding.openEmojiPopup.visibility = View.VISIBLE
                 binding.plus.visibility = View.VISIBLE
             }
 

@@ -28,6 +28,15 @@ class EmergencyContactSelectionAdapter(
     private var selectedItemPosition = -1
     private var lastItemSelectedPosition = -1
 
+    init {
+        // Set the selectedItemPosition to the index of the existing emergency contact, if it exists
+        if (existingEmergencyContact != null && users.contains(existingEmergencyContact)) {
+            selectedItemPosition = users.indexOf(existingEmergencyContact)
+            lastItemSelectedPosition = selectedItemPosition
+            Log.d("position", "$selectedItemPosition")
+        }
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userName: TextView = itemView.findViewById(R.id.userName)
         val image: ImageView = itemView.findViewById(R.id.image)
@@ -35,19 +44,14 @@ class EmergencyContactSelectionAdapter(
         init {
             radio.isClickable = false
             itemView.setOnClickListener {
-                selectedItemPosition = if (existingEmergencyContact != null && users.contains(existingEmergencyContact)) {
-                    users.indexOf(existingEmergencyContact)
-                } else {
-                    bindingAdapterPosition
-                }
-
-                if(lastItemSelectedPosition == -1)
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+                    if (lastItemSelectedPosition != -1) {
+                        notifyItemChanged(lastItemSelectedPosition)
+                    }
+                    selectedItemPosition = bindingAdapterPosition
                     lastItemSelectedPosition = selectedItemPosition
-                else {
-                    notifyItemChanged(lastItemSelectedPosition)
-                    lastItemSelectedPosition = selectedItemPosition
+                    notifyItemChanged(selectedItemPosition)
                 }
-                notifyItemChanged(selectedItemPosition)
             }
         }
     }
@@ -61,20 +65,23 @@ class EmergencyContactSelectionAdapter(
         val user = users[position]
 
         storage = FirebaseStorage.getInstance()
+        holder.image.setImageResource(R.drawable.avatar)
         storage.reference.child("Profile Images").child(user.userId!!).downloadUrl.addOnSuccessListener {
             Picasso.get().load(it).placeholder(R.drawable.avatar).into(holder.image)
+        }.addOnFailureListener {
+            holder.image.setImageResource(R.drawable.avatar)
         }
-        holder.userName.text = user.userName
 
-        if(position == selectedItemPosition) {
+        holder.userName.text = user.userName
+        holder.radio.isChecked = (position == selectedItemPosition)
+
+        if (position == selectedItemPosition) {
+            Log.d("position", "${user.userName}")
             selectedUser = user
-            holder.radio.isChecked = true
             SettingsActivity.binding.saveEmergencyContactButton.isEnabled = true
         }
-        else {
-            holder.radio.isChecked = false
-        }
     }
+
 
     override fun getItemCount(): Int {
         return users.size

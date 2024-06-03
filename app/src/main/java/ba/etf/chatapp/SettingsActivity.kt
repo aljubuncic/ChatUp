@@ -5,7 +5,9 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -25,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -58,7 +61,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
             }
             )
@@ -197,7 +199,16 @@ class SettingsActivity : AppCompatActivity() {
         val emergencyContact = users.find {
             it.mail.equals(currentUser.emergencyContactMail)
         }
-        usersAdapter = EmergencyContactSelectionAdapter(users,emergencyContact)
+        if(emergencyContact == null) {
+            binding.selectedEmergencyContactLayout.visibility = View.GONE
+            binding.selectEmergencyContact.text = "Izaberi kontakt za hitne slučajeve:"
+            return
+        }
+
+        binding.assignedEmergencyContactView.userNameList.text = emergencyContact.userName
+        storage.reference.child("Profile Images").child(emergencyContact.userId!!).downloadUrl.addOnSuccessListener {
+            Picasso.get().load(it).placeholder(R.drawable.avatar).into(binding.assignedEmergencyContactView.profileImage)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
